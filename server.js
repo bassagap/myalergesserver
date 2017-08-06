@@ -28,6 +28,8 @@ var MongoClient = mongodb.MongoClient;
 var url = 'mongodb://bassagap:pepitogrillo@ds141351.mlab.com:41351/myalerges';
 //(Focus on This Variable)
 
+var Food     = require('./app/models/food');
+
 // Use connect method to connect to the Server
   MongoClient.connect(url, function (err, db) {
   if (err) {
@@ -35,7 +37,6 @@ var url = 'mongodb://bassagap:pepitogrillo@ds141351.mlab.com:41351/myalerges';
   } else {
     console.log('Connection established to', url);
 
-    // do some work here with the database.
 
     //Close connection
     db.close();
@@ -43,7 +44,6 @@ var url = 'mongodb://bassagap:pepitogrillo@ds141351.mlab.com:41351/myalerges';
 });
 mongoose.connect('mongodb://bassagap:pepitogrillo@ds141351.mlab.com:41351/myalerges'); // connect to our database
 
-var Food     = require('./app/models/food');
 
 // ROUTES FOR OUR API
 // =============================================================================
@@ -55,7 +55,36 @@ router.use(function(req, res, next) {
     console.log('Something is happening.');
     next(); // make sure we go to the next routes and don't stop here
 });
+router.get('/', function(req, res) {
+  var food = new Food();      // create a new instance of the Bear model
+  food.name = req.body.name;  // set the bears name (comes from the request)
 
+  // save the bear and check for errors
+  food.save(function(err) {
+      if (err)
+          res.json(err);
+
+      res.json({ message: 'food created!' });
+  });
+});
+
+router.route('/foods')
+
+    // create a bear (accessed at POST http://localhost:8080/api/bears)
+    .post(function(req, res) {
+
+        var food = new Food();      // create a new instance of the Bear model
+        food.name = req.body.name;  // set the bears name (comes from the request)
+
+        // save the bear and check for errors
+        food.save(function(err) {
+            if (err)
+                res.send(err);
+
+            res.json({ message: 'food created!' });
+        });
+
+    });
 
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api
