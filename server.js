@@ -16,17 +16,56 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 var port = process.env.PORT || 8080;        // set our port
+var mongoose   = require('mongoose');
+mongoose.connect('mongodb://<bassagap>:<pepitogrillo>@ds141351.mlab.com:41351/myalerges'); // connect to our database
+
+var Food     = require('./app/models/food');
 
 // ROUTES FOR OUR API
 // =============================================================================
 var router = express.Router();              // get an instance of the express Router
 
+// middleware to use for all requests
+router.use(function(req, res, next) {
+    // do logging
+    console.log('Something is happening.');
+    next(); // make sure we go to the next routes and don't stop here
+});
+
 // test route to make sure everything is working (accessed at GET http://localhost:8080/api)
-router.get('/', function(req, res) {
+//router.get('/', function(req, res) {
     res.json({ message: 'hooray! welcome to our api!' });
 });
 
 // more routes for our API will happen here
+// on routes that end in /food
+// ----------------------------------------------------
+router.route('/food')
+
+    // create a food (accessed at POST http://localhost:8080/api/food)
+    .post(function(req, res) {
+
+        var food = new Food();      // create a new instance of the Bear model
+        food.name = req.body.name;  // set the bears name (comes from the request)
+
+        // save the bear and check for errors
+        food.save(function(err) {
+            if (err)
+                res.send(err);
+
+            res.json({ message: 'Food created!' });
+        });
+
+    });
+    // get all the food (accessed at GET http://localhost:8080/api/food)
+    .get(function(req, res) {
+        Food.find(function(err, foods) {
+            if (err)
+                res.send(err);
+
+            res.json(foods);
+        });
+    });
 
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api
