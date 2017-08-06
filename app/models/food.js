@@ -4,8 +4,7 @@ var mongoose     = require('mongoose');
 var Schema       = mongoose.Schema;
 
 var FoodSchema   = new Schema({
-    name: String,
-    ingredients: Array
+    name: String
 });
 
 module.exports = mongoose.model('Food', FoodSchema);
