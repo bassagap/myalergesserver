@@ -17,7 +17,31 @@ app.use(bodyParser.json());
 
 var port = process.env.PORT || 8080;        // set our port
 var mongoose   = require('mongoose');
-mongoose.connect('mongodb://<bassagap>:<pepitogrillo>@ds141351.mlab.com:41351/myalerges'); // connect to our database
+//lets require/import the mongodb native drivers.
+var mongodb = require('mongodb');
+
+//We need to work with "MongoClient" interface in order to connect to a mongodb server.
+var MongoClient = mongodb.MongoClient;
+// Connection URL. This is where your mongodb server is running.
+
+//(Focus on This Variable)
+var url = 'mongodb://bassagap:pepitogrillo@ds141351.mlab.com:41351/myalerges';
+//(Focus on This Variable)
+
+// Use connect method to connect to the Server
+  MongoClient.connect(url, function (err, db) {
+  if (err) {
+    console.log('Unable to connect to the mongoDB server. Error:', err);
+  } else {
+    console.log('Connection established to', url);
+
+    // do some work here with the database.
+
+    //Close connection
+    db.close();
+  }
+});
+mongoose.connect('mongodb://bassagap:pepitogrillo@ds141351.mlab.com:41351/myalerges'); // connect to our database
 
 var Food     = require('./app/models/food');
 
@@ -30,16 +54,6 @@ router.use(function(req, res, next) {
     // do logging
     console.log('Something is happening.');
     next(); // make sure we go to the next routes and don't stop here
-});
-
-// test route to make sure everything is working (accessed at GET http://localhost:8080/api)
-router.get('/', function(req, res) {
-  Food.find(function(err, foods) {
-      if (err)
-          res.send(err);
-
-      res.json(foods);
-  });
 });
 
 
