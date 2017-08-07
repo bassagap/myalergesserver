@@ -72,15 +72,15 @@ router.route('/foods')
 
     })
     // get all the bears (accessed at GET http://localhost:8080/api/bears)
-
-     axios.get("https://world.openfoodfacts.org/api/v0/product/" + "9556041609333" + ".json")
-      .then(function (response) {
-      res.json(response.data);
-      })
-      .catch(function (error) {
-        res.send(error);
-      });
-
+    .get(function(req, res) {
+      axios.get("https://world.openfoodfacts.org/api/v0/product/" + "9556041609333" + ".json")
+       .then(function (response) {
+       res.json(response.data);
+       })
+       .catch(function (error) {
+         res.send(error);
+       });
+     });
 
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api
