@@ -9,6 +9,7 @@
 var express    = require('express');        // call express
 var app        = express();                 // define our app using express
 var bodyParser = require('body-parser');
+var axios      = require('axios');
 
 // configure app to use bodyParser()
 // this will let us get the data from a POST
@@ -71,14 +72,15 @@ router.route('/foods')
 
     })
     // get all the bears (accessed at GET http://localhost:8080/api/bears)
-    .get(function(req, res) {
-         Food.find(function(err, foods) {
-             if (err)
-                 res.send(err);
 
-             res.json(foods);
-         });
-     });
+     axios.get("https://world.openfoodfacts.org/api/v0/product/" + "9556041609333" + ".json")
+      .then(function (response) {
+      res.json(response.data);
+      })
+      .catch(function (error) {
+        res.send(error);
+      });
+
 
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api
