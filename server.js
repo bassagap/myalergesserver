@@ -15,34 +15,28 @@ var bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-var port = process.env.PORT || 8080;        // set our port
+var port = process.env.PORT || 5000;        // set our port
 var mongoose   = require('mongoose');
 //lets require/import the mongodb native drivers.
 var mongodb = require('mongodb');
 
-//We need to work with "MongoClient" interface in order to connect to a mongodb server.
-var MongoClient = mongodb.MongoClient;
+var options = {
+    server: { socketOptions: { keepAlive: 300000, connectTimeoutMS: 30000 } },
+    replset: { socketOptions: { keepAlive: 300000, connectTimeoutMS: 30000 } }
+};
+
 // Connection URL. This is where your mongodb server is running.
 
 //(Focus on This Variable)
-var url = 'mongodb://bassagap:pepitogrillo@ds141351.mlab.com:41351/myalerges';
+var url = 'mongodb://admin:admin@ds141351.mlab.com:41351/myalerges';
 //(Focus on This Variable)
 
+mongoose.connect(url, options);
+var conn = mongoose.connection;
+conn.on('error', console.error.bind(console, 'connection error:'));
+conn.once('open', function () {console.log("Great success!")});
+
 var Food     = require('./app/models/food');
-
-// Use connect method to connect to the Server
-  MongoClient.connect(url, function (err, db) {
-  if (err) {
-    console.log('Unable to connect to the mongoDB server. Error:', err);
-  } else {
-    console.log('Connection established to', url);
-
-
-    //Close connection
-    db.close();
-  }
-});
-mongoose.connect('mongodb://bassagap:pepitogrillo@ds141351.mlab.com:41351/myalerges'); // connect to our database
 
 
 // ROUTES FOR OUR API
@@ -56,16 +50,7 @@ router.use(function(req, res, next) {
     next(); // make sure we go to the next routes and don't stop here
 });
 router.get('/', function(req, res) {
-  var food = new Food();      // create a new instance of the Bear model
-  food.name = req.body.name;  // set the bears name (comes from the request)
-
-  // save the bear and check for errors
-  food.save(function(err) {
-      if (err)
-          res.json(err);
-
       res.json({ message: 'food created!' });
-  });
 });
 
 router.route('/foods')
@@ -74,17 +59,26 @@ router.route('/foods')
     .post(function(req, res) {
 
         var food = new Food();      // create a new instance of the Bear model
-        food.name = req.body.name;  // set the bears name (comes from the request)
-
+        food.name = "naaaame"; //req.body.name;  // set the bears name (comes from the request)
+        console.log(food);
         // save the bear and check for errors
         food.save(function(err) {
             if (err)
                 res.send(err);
 
-            res.json({ message: 'food created!' });
+            res.json({ message: 'food created!222' });
         });
 
-    });
+    })
+    // get all the bears (accessed at GET http://localhost:8080/api/bears)
+    .get(function(req, res) {
+         Food.find(function(err, foods) {
+             if (err)
+                 res.send(err);
+
+             res.json(foods);
+         });
+     });
 
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api
