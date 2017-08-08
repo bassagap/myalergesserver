@@ -10,6 +10,7 @@ var express    = require('express');        // call express
 var app        = express();                 // define our app using express
 var bodyParser = require('body-parser');
 var axios      = require('axios');
+var food_service = require('./service');
 
 // configure app to use bodyParser()
 // this will let us get the data from a POST
@@ -74,12 +75,23 @@ router.route('/foods')
     // get all the bears (accessed at GET http://localhost:8080/api/bears)
     .get(function(req, res) {
       var barcode = req.query.barcode;
+      var food_information;
       axios.get("https://world.openfoodfacts.org/api/v0/product/" + barcode + ".json")
        .then(function (response) {
        res.json(response.data);
        })
        .catch(function (error) {
          res.send(error);
+       });
+       var food = new Food();      // create a new instance of the Bear model
+       food.name = "naaaame"; //req.body.name;  // set the bears name (comes from the request)
+       console.log(food);
+       // save the bear and check for errors
+       food.save(function(err) {
+           if (err)
+               res.send(err);
+
+           res.json({ message: 'food added' });
        });
      });
 
