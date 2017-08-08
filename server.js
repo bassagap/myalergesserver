@@ -76,6 +76,8 @@ router.route('/foods')
     .get(function(req, res) {
       var barcode = req.params.barcode;
       var food_information;
+      var food = new Food();      // create a new instance of the Bear model
+      food.name = res.data.product.product_name;
       console.log("barcode: ", req.params.barcode);
       axios.get("https://world.openfoodfacts.org/api/v0/product/" + barcode + ".json")
        .then(function (response) {
@@ -83,6 +85,9 @@ router.route('/foods')
        })
        .catch(function (error) {
          res.send(error);
+       });
+       food.save(function(err) {
+
        });
      });
 
