@@ -77,18 +77,21 @@ router.route('/foods')
       var barcode = req.params.barcode;
       var food_information;
       var food = new Food();      // create a new instance of the Bear model
-      food.name = res.data.product.product_name;
       console.log("barcode: ", req.params.barcode);
       axios.get("https://world.openfoodfacts.org/api/v0/product/" + barcode + ".json")
        .then(function (response) {
+         food.name = response.data.product.product_name;
+         food.ingredients = response.data.product.ingredients;
+         food.save(function(err) {
+
+         });
        res.json(response.data);
        })
        .catch(function (error) {
          res.send(error);
        });
-       food.save(function(err) {
+       console.log(food);
 
-       });
      });
 
 // REGISTER OUR ROUTES -------------------------------
