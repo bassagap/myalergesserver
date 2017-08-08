@@ -73,7 +73,8 @@ router.route('/foods')
     })
     // get all the bears (accessed at GET http://localhost:8080/api/bears)
     .get(function(req, res) {
-      axios.get("https://world.openfoodfacts.org/api/v0/product/" + "9556041609333" + ".json")
+      var barcode = req.query.barcode;
+      axios.get("https://world.openfoodfacts.org/api/v0/product/" + barcode + ".json")
        .then(function (response) {
        res.json(response.data);
        })
