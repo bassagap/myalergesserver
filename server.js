@@ -20,7 +20,7 @@ var port = process.env.PORT || 5000;        // set our port
 var mongoose   = require('mongoose');
 //lets require/import the mongodb native drivers.
 var mongodb = require('mongodb');
-
+var FoodController = require('.app/controllers/FoodController');
 var options = {
     server: { socketOptions: { keepAlive: 300000, connectTimeoutMS: 30000 } },
     replset: { socketOptions: { keepAlive: 300000, connectTimeoutMS: 30000 } }
@@ -73,26 +73,27 @@ router.route('/foods')
     });
     router.route('/foods/:barcode')
     // get all the bears (accessed at GET http://localhost:8080/api/bears)
-    .get(function(req, res) {
-      var barcode = req.params.barcode;
-      var food_information;
-      var food = new Food();      // create a new instance of the Bear model
-      console.log("barcode: ", req.params.barcode);
-      axios.get("https://world.openfoodfacts.org/api/v0/product/" + barcode + ".json")
-       .then(function (response) {
-         food.name = response.data.product.product_name;
-         food.ingredients = response.data.product.ingredients;
-         food.save(function(err) {
+    .get(FoodController.getFood
+      //function(req, res) {
+//      var food_information;
+//      var food = new Food();      // create a new instance of the Bear model
+//      console.log("barcode: ", req.params.barcode);
+//      axios.get("https://world.openfoodfacts.org/api/v0/product/" + barcode + ".json")
+//       .then(function (response) {
+//         food.name = response.data.product.product_name;
+//         food.ingredients = response.data.product.ingredients;
+//         food.save(function(err) {
+//
+//         });
+//       res.json(response.data);
+//       })
+//       .catch(function (error) {
+//         res.send(error);
+//       });
+//       console.log(food);
 
-         });
-       res.json(response.data);
-       })
-       .catch(function (error) {
-         res.send(error);
-       });
-       console.log(food);
-
-     });
+//     }
+   );
 
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api
