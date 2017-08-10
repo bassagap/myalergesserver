@@ -1,26 +1,12 @@
 
+var express = require('express'),
+  app = express(),
+  port = process.env.PORT || 5000,
+  mongoose = require('mongoose'),
+  Food = require('./api/models/foodModel'),
+  bodyParser = require('body-parser');
 
-// server.js
-
-// BASE SETUP
-// =============================================================================
-
-// call the packages we need
-var express    = require('express');        // call express
-var app        = express();                 // define our app using express
-var bodyParser = require('body-parser');
-var axios      = require('axios');
-
-// configure app to use bodyParser()
-// this will let us get the data from a POST
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-
-var port = process.env.PORT || 5000;        // set our port
-var mongoose   = require('mongoose');
-//lets require/import the mongodb native drivers.
-var mongodb = require('mongodb');
-var FoodController = require('.app/controllers/FoodController');
+mongoose.Promise = global.Promise;
 var options = {
     server: { socketOptions: { keepAlive: 300000, connectTimeoutMS: 30000 } },
     replset: { socketOptions: { keepAlive: 300000, connectTimeoutMS: 30000 } }
@@ -33,73 +19,19 @@ var url = 'mongodb://admin:admin@ds141351.mlab.com:41351/myalerges';
 //(Focus on This Variable)
 
 mongoose.connect(url, options);
-var conn = mongoose.connection;
-conn.on('error', console.error.bind(console, 'connection error:'));
-conn.once('open', function () {console.log("Great success!")});
-
-var Food     = require('./app/models/food');
 
 
-// ROUTES FOR OUR API
-// =============================================================================
-var router = express.Router();              // get an instance of the express Router
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
-// middleware to use for all requests
-router.use(function(req, res, next) {
-    // do logging
-    console.log('Something is happening.');
-    next(); // make sure we go to the next routes and don't stop here
-});
-router.get('/', function(req, res) {
-      res.json({ message: 'food created!' });
+
+var routes = require('./api/routes/foodRoutes');
+routes(app);
+
+app.use(function(req, res) {
+  res.status(404).send({url: req.originalUrl + ' not found'})
 });
 
-router.route('/foods')
-
-    // create a bear (accessed at POST http://localhost:8080/api/bears)
-    .post(function(req, res) {
-
-        var food = new Food();      // create a new instance of the Bear model
-        food.name = "naaaame"; //req.body.name;  // set the bears name (comes from the request)
-        console.log(food);
-        // save the bear and check for errors
-        food.save(function(err) {
-            if (err)
-                res.send(err);
-
-            res.json({ message: 'food created!222' });
-        });
-
-    });
-    router.route('/foods/:barcode')
-    // get all the bears (accessed at GET http://localhost:8080/api/bears)
-    .get(FoodController.getFood
-      //function(req, res) {
-//      var food_information;
-//      var food = new Food();      // create a new instance of the Bear model
-//      console.log("barcode: ", req.params.barcode);
-//      axios.get("https://world.openfoodfacts.org/api/v0/product/" + barcode + ".json")
-//       .then(function (response) {
-//         food.name = response.data.product.product_name;
-//         food.ingredients = response.data.product.ingredients;
-//         food.save(function(err) {
-//
-//         });
-//       res.json(response.data);
-//       })
-//       .catch(function (error) {
-//         res.send(error);
-//       });
-//       console.log(food);
-
-//     }
-   );
-
-// REGISTER OUR ROUTES -------------------------------
-// all of our routes will be prefixed with /api
-app.use('/api', router);
-
-// START THE SERVER
-// =============================================================================
 app.listen(port);
-console.log('Magic happens on port ' + port);
+
+console.log('Magic happens on port: ' + port);
