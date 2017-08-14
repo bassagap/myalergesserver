@@ -6,5 +6,5 @@ module.exports = function(app) {
 	// todoList Routes
 	app.route('/food')
 		.get(food.get_all_ingredients)
-		console.log("GET");
+		console.log("GET Routes");
 };
