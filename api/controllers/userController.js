@@ -10,24 +10,32 @@ var mongoose = require('mongoose'),
 var passport   = require('passport');
 exports.get_all_users = function(req, res) {
   passport.authenticate('jwt', { session: false});
-  console.log("header: " + req.header);
-  var token = getToken(req.headers);
+  console.log("header: " + req.get("authorization"));
+  var token = req.get("authorization");
+  //var token = getToken(token_pre);
     if (token) {
-      var decoded = jwt.decode(token, config.secret);
-      User.findOne({
-        name: decoded.name
-      }, function(err, user) {
-          if (err) throw err;
+        console.log("if token yes:");
+      var parted = token.split(' ');
+      if (parted.length === 2) {
+        console.log("if token yes and parted:" + parted[1]);
+        var decoded = jwt.decode(parted[1], config.secret);
+        User.findOne({
+          name: decoded.name
+        }, function(err, user) {
+            if (err) throw err;
 
-          if (!user) {
-            return res.status(403).send({success: false, msg: 'Authentication failed. User not found.'});
-          } else {
-            res.json({success: true, msg: 'Welcome in the member area ' + user.name + '!'});
-          }
-      });
-    } else {
-      return res.status(403).send({success: false, msg: 'No token provided.'});
-    }
+            if (!user) {
+              return res.status(403).send({success: false, msg: 'Authentication failed. User not found.'});
+            } else {
+              res.json({success: true, msg: 'Welcome in the member area ' + user.name + '!'});
+            }
+        });
+      } else {
+        return res.status(403).send({success: false, msg: 'No token provided.'});
+      }
+      } else {
+        return null;
+      }
 };
 exports.register_user = function(req, res) {
   console.log("req.body.name register: " + req.query.name );
@@ -71,9 +79,7 @@ exports.authenticate_user = function(req, res) {
       }
     });
 };
-
 exports.getToken = function (headers) {
-  console.log("header getToken: " + req.header);
   if (headers && headers.authorization) {
     var parted = headers.authorization.split(' ');
     if (parted.length === 2) {
