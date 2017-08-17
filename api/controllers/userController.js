@@ -9,15 +9,12 @@ var mongoose = require('mongoose'),
 
 var passport   = require('passport');
 exports.get_all_users = function(req, res) {
+  res.header("Access-Control-Allow-Origin", "*");
   passport.authenticate('jwt', { session: false});
-  console.log("header: " + req.get("authorization"));
   var token = req.get("authorization");
-  //var token = getToken(token_pre);
     if (token) {
-        console.log("if token yes:");
       var parted = token.split(' ');
       if (parted.length === 2) {
-        console.log("if token yes and parted:" + parted[1]);
         var decoded = jwt.decode(parted[1], config.secret);
         User.findOne({
           name: decoded.name
@@ -38,6 +35,7 @@ exports.get_all_users = function(req, res) {
       }
 };
 exports.register_user = function(req, res) {
+  res.header("Access-Control-Allow-Origin", "*");
   console.log("req.body.name register: " + req.query.name );
   if (!req.query.name || !req.query.password) {
       res.json({success: false, msg: 'Please pass name and password.'});
@@ -51,11 +49,13 @@ exports.register_user = function(req, res) {
         if (err) {
           return res.json({success: false, msg: 'Username already exists.'});
         }
+        res.header("Access-Control-Allow-Origin", "*");
         res.json({success: true, msg: 'Successful created new user.'});
       });
     }
 };
 exports.authenticate_user = function(req, res) {
+  res.header("Access-Control-Allow-Origin", "*");
   console.log("req.query.name authenticate: " + req.query.name);
   User.findOne({
       name: req.query.name
