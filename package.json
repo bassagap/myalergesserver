@@ -22,10 +22,13 @@
     "mongoose": "4.1.9",
     "morgan": "^1.8.2",
     "passport": "^0.3.0",
-    "passport-jwt": "^1.2.1"
+    "passport-jwt": "^1.2.1",
+    "supertest": "^3.0.0",
+    "supertest-as-promised": "^4.0.2"
   },
   "devDependencies": {
     "jest": "^20.0.4",
+    "jest-cli": "^20.0.4",
     "request": "^2.81.0",
     "tape": "^4.7.0"
   },
