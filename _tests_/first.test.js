@@ -13,7 +13,16 @@ describe('Flow API', () => {
     });
   });
 });
-
+describe('Flow API 2', () => {
+  it('hello test 2', () => {
+    return request("https://myalergesserver.herokuapp.com").get('/food?barcode=8410199001283')
+    .expect(200)
+    .then((res) => {
+      expect(typeof res.body.name).toBe('string');
+      expect(res.body.name).toBe('Coca-Cola');
+    });
+  });
+});
 describe('sum', function() {
 	it('adds 1 + 2 to equal 3', function() {
 	    expect(3).toBe(3);
